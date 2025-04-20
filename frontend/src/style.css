@@ -1,0 +1,22 @@
+:root {
+  color-scheme: dark light;
+}
+body {
+    font-size: 16px/1.5;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #000000;
+        color: #ffffff;
+    }
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Prend toute la hauteur de l'écran */
+}

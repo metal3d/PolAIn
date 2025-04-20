@@ -1,0 +1,8 @@
+{
+  "prompt.placeholder": "Type your question here",
+  "prompt.send": "Send",
+  "menu.conversation": "Conversation",
+  "menu.conversation.new": "New conversation",
+  "menu.models": "Models",
+  "conversation.new.confirm": "This will delete your current conversation, are you sure?"
+}
