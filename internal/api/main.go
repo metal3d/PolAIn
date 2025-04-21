@@ -186,10 +186,5 @@ func GetModels() []ModelDefinition {
 		log.Println("Error decoding models:", err)
 		return nil
 	}
-	// debug
-	for _, model := range response {
-		log.Println("Model:", model.Name, model.Uncensorded)
-		log.Println("Description:", model.Description)
-	}
 	return response
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"encoding/json"
-	"log"
 	"strings"
 
 	"github.com/jeandeaual/go-locale"
@@ -52,6 +51,5 @@ func (a *App) T(m, lang string) string {
 			return t
 		}
 	}
-	log.Println("Translation not found, falling back to en")
 	return m
 }

@@ -59,7 +59,6 @@ func (a *App) NewConversation() error {
 		log.Println("Error showing dialog:", err)
 		return err
 	}
-	fmt.Println("Dialog result:", md)
 	// probably not needed, but I'm not sure about the text
 	if slices.Contains([]string{"no", "cancel", "cancelled"}, strings.ToLower(md)) {
 		return nil
