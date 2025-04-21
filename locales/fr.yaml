@@ -21,12 +21,15 @@ about.help: |
   PolAin est une application conversationnelle avec l'IA (Intelligence Artificielle). Elle utilise le service 
   [https://pollinations.ai](https://pollinations.ai) pour répondre avec différents "modèles".
 
+  > Pollinations est une plateforme entièrement libre, proposant des accès à des modèles IA texte et
+  > images, en **garantissant l'anonymat et le respect de la vie privée**.
+
   Un modèle est une "version" entrainée d'une IA. Elles ont toutes une manière de traiter l'information et de 
   la restituer. Selon votre demande, un modèle pourra ne pas répondre efficacement.
 
   Cette application permet aussi de générer des images.
 
-  ## Comment utiliser l'application
+  ## Comment utiliser l'application ?
 
   Tapez simplement une question et pressez la touche "Entrée", le modèle sélectionné dans le menu "Modèles" 
   va alors être utilisé pour répondre à cette question. Si vous voulez changer de modèle, utilisez le menu 
@@ -38,7 +41,7 @@ about.help: |
   ## La génération d'image
 
   PolAIn détecte si vous demandez une image. Dans ce cas précis, il va aider l'IA à créer une adresse 
-  d'image sur le service (https://images.pollinsations.ai)[https://images.pollinsations.ai] - l'image sera 
+  d'image sur le service [https://images.pollinsations.ai](https://images.pollinsations.ai) - l'image sera 
   générée et affichée dans la conversation.
 
   ## Auteur et licence

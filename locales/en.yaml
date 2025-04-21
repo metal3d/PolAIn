@@ -23,12 +23,15 @@ about.help: |
   the [https://pollinations.ai](https://pollinations.ai) service to respond with 
   different “models”.
 
+  > Pollinations is an entirely free platform, offering access to IA text and image models, 
+  > while **guaranteeing anonymity and privacy**.
+
   A model is a trained “version” of an AI. They all have a way of processing information
   and rendering it. Depending on your request, a model may not respond efficiently.
 
   This application can also be used to generate images.
 
-  ## How to use the application
+  ## How to use the application?
 
   Simply type a question and press the “Enter” key, the template selected in the 
   “Models” menu will then be used to answer that question. If you want to 
@@ -41,7 +44,7 @@ about.help: |
 
   PolAIn detects when you request an image. In this case, it will help the AI to 
   create an image address on the service 
-  (https://images.pollinsations.ai)[https://images.pollinsations.ai] - the image 
+  [https://images.pollinsations.ai](https://images.pollinsations.ai) - the image 
   will be generated and displayed in the conversation.
 
 
