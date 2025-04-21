@@ -1,5 +1,9 @@
 # README
 
+<div align="center">
+  <img src="./build/appicon.png" alt="Logo" width="200"/>
+</div>
+
 ## About
 
 PolAIn is a simple "conversation with AI" interface to communicate with <https://pollinations.ai> free an open source endpoints. It is developed with [Go](https://go.dev) and the [Wails](https://wails.io/) project.
