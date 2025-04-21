@@ -51,5 +51,8 @@ func (a *App) T(m, lang string) string {
 			return t
 		}
 	}
+	if lang != "en" {
+		return a.T(m, "en")
+	}
 	return m
 }
