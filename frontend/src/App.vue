@@ -1,14 +1,30 @@
 <script setup>
 import { ref, onMounted, useTemplateRef } from 'vue';
-import { Ask } from "../wailsjs/go/main/App";
+import { Ask, GetSelectedModel } from "../wailsjs/go/main/App";
 import { EventsOn } from "../wailsjs/runtime/runtime";
+import MarkdownIt from 'markdown-it';
 import Prompt from "./components/Prompt.vue";
 import Message from "./components/Message.vue";
+import _ from "./i18n.js"
 
 const history = ref([]);
 const messageHistory = useTemplateRef('messageHistory');
 const waitingResponse = ref(false);
-//
+const currentModel = ref("");
+const showHelp = ref(false);
+const markdown = new MarkdownIt();
+
+const currentModelLabel = ref("")
+const helpText = ref("")
+const closeLabel = ref("")
+
+// Update translations
+async function updateTranslation() {
+  currentModelLabel.value = await _("model.current")
+  helpText.value = await _("about.help")
+  closeLabel.value = await _("close")
+}
+
 // when content changes
 function onContent() {
   messageHistory.value.scrollTop = messageHistory.value.scrollHeight;
@@ -47,6 +63,15 @@ function sendPrompt(prompt) {
     });
 }
 
+function setCurrentModel() {
+  GetSelectedModel()
+    .then((model) => {
+      currentModel.value = model;
+    })
+    .catch((error) => {
+      console.error("Error fetching current model:", error);
+    });
+}
 
 onMounted(() => {
   // Listen for events from the backend
@@ -58,12 +83,28 @@ onMounted(() => {
     history.value = [];
     onContent();
   })
+  EventsOn("selected-model", (model) => {
+    currentModel.value = model;
+  });
+  EventsOn("show-help", () => {
+    showHelp.value = !showHelp.value;
+  });
+  updateTranslation();
+  setCurrentModel();
+
 });
 
 
 </script>
 
 <template>
+  <div class="on-top">
+    <p>{{ currentModelLabel }} :
+      <strong>{{ currentModel.name }}</strong>
+      <span v-if="currentModel.uncensored"> 🔞</span>
+    </p>
+    <small>{{ currentModel.description }}</small>
+  </div>
   <div class="message-history" ref="messageHistory">
     <Message v-for="message in history" :key="message.id" :message="message" :onContent="onContent" />
     <div v-if="waitingResponse" class="thinking">
@@ -75,9 +116,96 @@ onMounted(() => {
   </div>
 
   <Prompt :sendPrompt="sendPrompt" />
+  <div class="popup" v-if="showHelp">
+    <article v-html="markdown.render(helpText)">
+    </article>
+    <button @click="showHelp = false">{{ closeLabel }}</button>
+  </div>
 </template>
 
 <style>
+.popup {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: .5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  height: 80vh;
+  width: 80vw;
+  margin-top: 1rem;
+  margin-left: 10vw;
+  z-index: 1001;
+}
+
+.popup article {
+  overflow-y: auto;
+  height: 90%;
+  margin: 1rem;
+}
+
+.popup button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup blockquote {
+  font-style: italic;
+  color: #555;
+}
+
+small {
+  font-size: 0.8rem;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  .popup {
+    background-color: #242424;
+    color: white;
+  }
+
+  .popup blockquote {
+    color: #aaa;
+  }
+
+  .popup button {
+    background-color: #4CAF50;
+    color: white;
+  }
+}
+
+
+.on-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  z-index: 1000;
+  padding: 1rem;
+  border-radius: .5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: black;
+}
+
+.on-top p {
+  margin: .25em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .on-top {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+  }
+}
+
 .message-history {
   flex-grow: 1;
   padding: 20px;

@@ -15,18 +15,6 @@ async function updateTranslation() {
   promptSend.value = await _("prompt.send")
 }
 
-onMounted(() => {
-  EventsOn("ask-start", () => {
-    answering.value = true;
-  });
-  EventsOn("ask-done", () => {
-    answering.value = false;
-  });
-  updateTranslation()
-});
-
-
-
 function sendPrompt() {
   const prompt = userInput.value.value;
   if (prompt) {
@@ -42,6 +30,20 @@ function handleTextareaKeys(event) {
     sendPrompt();
   }
 }
+
+onMounted(() => {
+  EventsOn("ask-start", () => {
+    answering.value = true;
+  });
+  EventsOn("ask-done", () => {
+    answering.value = false;
+    userInput.value.focus();
+  });
+  updateTranslation()
+});
+
+
+
 
 </script>
 <template>

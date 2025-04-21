@@ -1,6 +1,51 @@
+close: Fermer
 prompt.placeholder: Tapez votre question ici
 prompt.send: Envoyer
 menu.conversation: Convesation
 menu.conversation.new: Nouvelle conversation
 menu.models: Modèles
 conversation.new.confirm: Cela effacera votre conversation en cours, êtes vous sûr ?
+model.current: Modèle en cours
+model.alert.uncensored.title: 🔞 Modèle non censuré
+model.alert.uncensored.message: |
+  Attention, ce modèle est non censuré !
+  Cela signifie que ses réponses peuvent être inappropriées, violentes, insultantes, ou sexuellement explicites.
+  Vous devez prendre toutes les précautions en ce qui concerne ses réponses, et ne les utiliser qu'à 
+  des fins de recherche, d'utilisation personnelles et dans la limite des lois applicables dans votre pays.
+
+menu.help.title: Aide et informations
+
+about.help: |
+  # PolAIn
+
+  PolAin est une application conversationnelle avec l'IA (Intelligence Artificielle). Elle utilise le service 
+  [https://pollinations.ai](https://pollinations.ai) pour répondre avec différents "modèles".
+
+  Un modèle est une "version" entrainée d'une IA. Elles ont toutes une manière de traiter l'information et de 
+  la restituer. Selon votre demande, un modèle pourra ne pas répondre efficacement.
+
+  Cette application permet aussi de générer des images.
+
+  ## Comment utiliser l'application
+
+  Tapez simplement une question et pressez la touche "Entrée", le modèle sélectionné dans le menu "Modèles" 
+  va alors être utilisé pour répondre à cette question. Si vous voulez changer de modèle, utilisez le menu 
+  "Modèles" et sélectionnez celui qui vous convient.
+
+  > Chaque modèle à sa propre manière de répondre à vos demandes. Attention, certains sont marqué d'un 
+  symbole 🔞 ce qui signifie qu'il ne sont pas censurés.
+
+  ## La génération d'image
+
+  PolAIn détecte si vous demandez une image. Dans ce cas précis, il va aider l'IA à créer une adresse 
+  d'image sur le service (https://images.pollinsations.ai)[https://images.pollinsations.ai] - l'image sera 
+  générée et affichée dans la conversation.
+
+  ## Auteur et licence
+
+  Cette application est un logiciel libre, open source, développé par Patrice Ferlet.
+
+  Les sources de l'application et la page pour proposer votre aide, ou pour créer un rapport 
+  de bug, se trouvent à l'addresse:
+
+  [https://github.com/metal3d/polain](https://github.com/metal3d/polain)

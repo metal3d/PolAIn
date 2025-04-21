@@ -6,6 +6,10 @@ export function Ask(arg1) {
   return window['go']['main']['App']['Ask'](arg1);
 }
 
+export function GetSelectedModel() {
+  return window['go']['main']['App']['GetSelectedModel']();
+}
+
 export function NewConversation() {
   return window['go']['main']['App']['NewConversation']();
 }

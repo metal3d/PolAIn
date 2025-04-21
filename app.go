@@ -33,7 +33,7 @@ func (a *App) Ask(prompt string) error {
 	runtime.EventsEmit(a.ctx, "ask-start", prompt)
 	defer runtime.EventsEmit(a.ctx, "ask-done", prompt)
 
-	stream, history := api.Ask(prompt, a.history, currentModel)
+	stream, history := api.Ask(prompt, a.history, currentModel.Name)
 	a.history = history
 	buffer := ""
 	for chunk := range stream {
@@ -67,4 +67,9 @@ func (a *App) NewConversation() error {
 	a.history = []*api.Message{}
 	runtime.EventsEmit(a.ctx, "new-conversation", a.history)
 	return nil
+}
+
+// GetHistory returns the current conversation model.
+func (a *App) GetSelectedModel() *ModelPresentation {
+	return currentModel
 }

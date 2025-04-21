@@ -1,8 +1,14 @@
 {
+  "close": "Close",
   "prompt.placeholder": "Type your question here",
   "prompt.send": "Send",
   "menu.conversation": "Conversation",
   "menu.conversation.new": "New conversation",
   "menu.models": "Models",
-  "conversation.new.confirm": "This will delete your current conversation, are you sure?"
+  "conversation.new.confirm": "This will delete your current conversation, are you sure?",
+  "model.current": "Using model",
+  "model.alert.uncensored.title": "🔞 Uncensored model",
+  "model.alert.uncensored.message": "Warning: this model is uncensored!\n\nThis means that its responses may be inappropriate, violent, insulting or sexually explicit.\nYou must take every precaution with regard to its answers, and use them only for research purposes, \npersonal use and within the limits of the laws applicable in your country.\n",
+  "menu.help.title": "Help and information",
+  "about.help": "# PolAIn\n\nPolAin is a conversational application with AI (Artificial Intelligence). It uses \nthe [https://pollinations.ai](https://pollinations.ai) service to respond with \ndifferent “models”.\n\nA model is a trained “version” of an AI. They all have a way of processing information\nand rendering it. Depending on your request, a model may not respond efficiently.\n\nThis application can also be used to generate images.\n\n## How to use the application\n\nSimply type a question and press the “Enter” key, the template selected in the \n“Models” menu will then be used to answer that question. If you want to \nchange the template, use the “Templates” menu and select the one you want.\n\n> Each template has its own way of responding to your requests. Please note \nthat some are marked with a 🔞 symbol, which means they are not censored.\n\n## Image generation\n\nPolAIn detects when you request an image. In this case, it will help the AI to \ncreate an image address on the service \n(https://images.pollinsations.ai)[https://images.pollinsations.ai] - the image \nwill be generated and displayed in the conversation.\n\n\n## Author and license\n\nThis application is free, open source software, developed by Patrice Ferlet.\n\nThe sources of the application and the page to offer your help, or to create a bug report,\ncan be found at the address:\n\n[https://github.com/metal3d/polain](https://github.com/metal3d/polain)\n"
 }
