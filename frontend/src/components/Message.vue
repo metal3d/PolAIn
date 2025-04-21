@@ -89,6 +89,7 @@ watch(() => props.message.content, enhanceImages, { immediate: true });
   .message-content {
     color: #fafafa;
   }
+
   .message-content.assistant {
     background-color: #303030;
   }
