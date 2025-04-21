@@ -66,7 +66,7 @@ func (a *App) NewConversation() error {
 	return nil
 }
 
-// GetHistory returns the current conversation model.
+// GetSelectedModel returns the selected model.
 func (a *App) GetSelectedModel() *ModelPresentation {
 	return currentModel
 }
