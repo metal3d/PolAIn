@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -103,7 +102,6 @@ func Ask(prompt string, history []*Message, model string) (chan *OpenAIChunk, []
 		Model:    model,
 	}, chunk)
 
-	fmt.Println("Asking:", prompt, history)
 	return chunk, history
 }
 

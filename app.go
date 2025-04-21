@@ -3,7 +3,6 @@ package main
 import (
 	"PolAIn/internal/api"
 	"context"
-	"fmt"
 	"log"
 	"slices"
 	"strings"
@@ -37,7 +36,6 @@ func (a *App) Ask(prompt string) error {
 	a.history = history
 	buffer := ""
 	for chunk := range stream {
-		fmt.Println(chunk)
 		runtime.EventsEmit(a.ctx, "chunk", chunk)
 		buffer += chunk.Choices[0].Delta.Content
 	}
