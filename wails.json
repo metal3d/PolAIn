@@ -9,5 +9,10 @@
   "author": {
     "name": "Patrice Ferlet",
     "email": "metal3d@gmail.com"
+  },
+  "info": {
+    "copyright": "Copyright © 2023 Patrice Ferlet",
+    "license": "MIT",
+    "productVersion": "1.0.0"
   }
 }
