@@ -76,28 +76,16 @@ watch(() => props.message.content, enhanceImages, { immediate: true });
   padding: 1rem;
   border-radius: 1rem;
   word-wrap: break-word;
-  color: #121212;
+  color: var(--adw-color-fg);
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.3);
+  background-color: var(--adw-color-border);
 }
 
 .message-content.assistant {
-  background-color: #383838;
-  color: #fafafa;
+  background-color: var(--adw-color-view-bg);
 }
 
-@media (prefers-color-scheme: dark) {
-  .message-content {
-    color: #fafafa;
-  }
 
-  .message-content.assistant {
-    background-color: #303030;
-  }
-
-  .message-content.user {
-    background-color: #242424;
-  }
-}
 
 @media (min-width: 974px) {
   .message-content {

@@ -1,0 +1,56 @@
+:root {
+  /* Base Colors - Light mode */
+  --adw-color-bg: #ffffff;
+  --adw-color-fg: #1e1e1e;
+
+  --adw-color-view-bg: #f6f5f4;
+  --adw-color-view-fg: #1e1e1e;
+
+  --adw-color-accent: #3584e4;
+  --adw-color-accent-foreground: #ffffff;
+
+  --adw-color-destructive: #e01b24;
+  --adw-color-destructive-foreground: #ffffff;
+
+  --adw-color-success: #33d17a;
+  --adw-color-warning: #f6d32d;
+  --adw-color-error: #e01b24;
+
+  --adw-color-border: #dcdcdc;
+  --adw-color-card: #ffffff;
+  --adw-color-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Neutral Tones */
+  --adw-color-muted: #5e5c64;
+  --adw-color-subtle: #c0bfbc;
+  --adw-color-placeholder: #9a9996;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Base Colors - Dark mode */
+    --adw-color-bg: #1e1e1e;
+    --adw-color-fg: #ffffff;
+
+    --adw-color-view-bg: #242424;
+    --adw-color-view-fg: #ffffff;
+
+    --adw-color-accent: #62a0ea;
+    --adw-color-accent-foreground: #1e1e1e;
+
+    --adw-color-destructive: #f66151;
+    --adw-color-destructive-foreground: #1e1e1e;
+
+    --adw-color-success: #57e389;
+    --adw-color-warning: #f6d32d;
+    --adw-color-error: #ff7b63;
+
+    --adw-color-border: #3c3c3c;
+    --adw-color-card: #2e2e2e;
+    --adw-color-shadow: rgba(0, 0, 0, 0.6);
+
+    --adw-color-muted: #9a9996;
+    --adw-color-subtle: #77767b;
+    --adw-color-placeholder: #a1a1a1;
+  }
+}

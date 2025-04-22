@@ -56,44 +56,35 @@ onMounted(() => {
 .prompt-container {
   display: flex;
   padding: 10px;
-  background-color: #eee;
 }
 
 .prompt-container textarea {
   flex-grow: 1;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--adw-color-border);
   border-radius: 5px;
   margin-right: 5px;
 }
 
 .prompt-container button {
   padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--adw-color-success);
+  color: var(--adw-color-fg);
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: .2s opacity ease-in-out;
 }
 
-button:hover {
-  background-color: #45a049;
-}
 
 button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
-
-@media (prefers-color-scheme: dark) {
-  .prompt-container {
-    background-color: #121212;
-    color: white;
-  }
-
-  .prompt-container textarea {
-    background-color: #121212;
-    color: white;
-  }
+button:hover:not(:disabled) {
+  background-color: var(--adw-color-success);
+  opacity: .8;
 }
+
+
 </style>

@@ -142,7 +142,7 @@ document.body.addEventListener('click', function (e) {
   position: fixed;
   display: flex;
   flex-direction: column;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--adw-color-bg);
   padding: 10px;
   border-radius: .5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -161,8 +161,8 @@ document.body.addEventListener('click', function (e) {
 
 .popup button {
   padding: 10px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--adw-color-success);
+  color: var(--adw-color-fg);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -178,23 +178,6 @@ small {
 }
 
 
-@media (prefers-color-scheme: dark) {
-  .popup {
-    background-color: #242424;
-    color: white;
-  }
-
-  .popup blockquote {
-    color: #aaa;
-  }
-
-  .popup button {
-    background-color: #4CAF50;
-    color: white;
-  }
-}
-
-
 .on-top {
   position: absolute;
   top: 0;
@@ -205,35 +188,21 @@ small {
   border-radius: .5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: black;
+  background-color: var(--adw-color-view-bg);
+  color: var(--adw-color-fg);
 }
 
 .on-top p {
   margin: .25em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .on-top {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-  }
-}
-
 .message-history {
   flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
-  background-color: #f0f0f0;
+  background-color: var(--adw-color-bg);
 }
 
-
-@media (prefers-color-scheme: dark) {
-  .message-history {
-    background-color: #121212;
-    color: white;
-  }
-}
 
 .thinking {
   display: flex;
