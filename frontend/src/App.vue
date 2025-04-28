@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted, useTemplateRef } from 'vue';
 import { Ask, GetSelectedModel } from "../wailsjs/go/main/App";
-import { EventsOn } from "../wailsjs/runtime/runtime";
+import { EventsOn, OnFileDrop } from "../wailsjs/runtime/runtime";
 import Prompt from "./components/Prompt.vue";
 import Message from "./components/Message.vue";
+import Files from "./components/Files.vue";
 import _ from "./i18n.js"
 
 
@@ -96,6 +97,9 @@ onMounted(() => {
   EventsOn("show-help", () => {
     showHelp.value = !showHelp.value;
   });
+  OnFileDrop((x, y, paths) => {
+    console.log("File dropped at", x, y, paths);
+  })
   updateTranslation();
   setCurrentModel();
 });
@@ -109,6 +113,7 @@ onMounted(() => {
       <strong>{{ currentModel.name }}</strong>
       <span v-if="currentModel.uncensored"> 🔞</span>
       <small> :: {{ currentModel.description }}</small>
+      <span v-if="currentModel.vision"> 👁️</span>
     </p>
   </div>
   <div class="message-history" ref="messageHistory">
@@ -121,6 +126,7 @@ onMounted(() => {
     </div>
   </div>
 
+  <Files :class="{ 'hidden': !currentModel.vision }" />
   <Prompt :sendPrompt="sendPrompt" />
   <div class="popup" v-if="showHelp">
     <article v-html="translations.helpText">
@@ -130,6 +136,10 @@ onMounted(() => {
 </template>
 
 <style>
+.hidden {
+  visibility: hidden;
+}
+
 .popup {
   position: fixed;
   display: flex;

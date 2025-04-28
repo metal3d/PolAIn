@@ -10,6 +10,8 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+var filesToSend = []string{}
+
 // Rendered struct represents the rendered response for the view.
 type Rendered struct {
 	// Chunk is the chunk received from the OpenAI API.
@@ -35,15 +37,73 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	runtime.OnFileDrop(ctx, func(x, y int, files []string) {
+		log.Println("Dropped files:", files)
+		if !currentModel.Vision {
+			runtime.MessageDialog(ctx, runtime.MessageDialogOptions{
+				Type:    runtime.ErrorDialog,
+				Message: "Sorry, the current model cannot read input files",
+				Title:   "Error",
+			})
+		} else {
+			// encore files
+			for _, f := range files {
+				content, err := encodeFile(f)
+				if err != nil {
+					log.Println("Error encoding image:", err)
+					continue
+				}
+				filesToSend = append(filesToSend, content)
+				runtime.EventsEmit(ctx, "register-files", content)
+			}
+		}
+	})
+}
+
+func (a *App) RemoveFile(pos int) bool {
+	response, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:    runtime.QuestionDialog,
+		Title:   "Delete Image",
+		Message: "Are you sure you want to delete this image?",
+	})
+	if err != nil {
+		log.Println("Error showing dialog:", err)
+		return false
+	}
+	if response == "yes" {
+		filesToSend = slices.Delete(filesToSend, pos, pos+1)
+	}
+	return true
 }
 
 // Ask sends a prompt to the OpenAI API and returns the response.
 func (a *App) Ask(prompt string) error {
 	runtime.EventsEmit(a.ctx, "ask-start", prompt)
 	defer runtime.EventsEmit(a.ctx, "ask-done", prompt)
+	defer func() {
+		filesToSend = []string{}
+	}()
+
+	message := api.MessageContent{
+		Type: "text",
+		Text: &prompt,
+	}
+
+	toSend := []api.MessageContent{message}
+
+	// append the files to send
+	for _, f := range filesToSend {
+		toSend = append(toSend, api.MessageContent{
+			Type: "image_url",
+			ImageURL: &map[string]string{
+				"url": f,
+			},
+		},
+		)
+	}
 
 	// call the AI API
-	stream, history := api.Ask(prompt, a.history, currentModel.Name)
+	stream, history := api.Ask(toSend, a.history, currentModel.Name)
 	a.history = history
 
 	// on chunk received, fix the markdown, create HTML and emit the event
@@ -67,7 +127,7 @@ func (a *App) Ask(prompt string) error {
 	}
 	a.history = append(history, &api.Message{
 		Role:    api.Assistant,
-		Content: buffer,
+		Content: []api.MessageContent{{Type: "text", Text: &buffer}},
 	})
 	log.Println("Final buffer", buffer)
 	return nil
@@ -89,6 +149,7 @@ func (a *App) NewConversation() error {
 		return nil
 	}
 	a.history = []*api.Message{}
+	filesToSend = []string{}
 	runtime.EventsEmit(a.ctx, "new-conversation", a.history)
 	return nil
 }

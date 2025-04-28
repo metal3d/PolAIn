@@ -17,3 +17,7 @@ body {
   flex-direction: column;
   height: 100vh;
 }
+
+#app {
+  --wails-drop-target: drop
+}

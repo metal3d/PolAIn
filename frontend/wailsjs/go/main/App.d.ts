@@ -8,6 +8,8 @@ export function GetSelectedModel():Promise<main.ModelPresentation>;
 
 export function NewConversation():Promise<void>;
 
+export function RemoveFile(arg1:number):Promise<boolean>;
+
 export function T(arg1:string,arg2:string,arg3:boolean):Promise<string>;
 
 export function Translate(arg1:string):Promise<string>;

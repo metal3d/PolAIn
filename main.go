@@ -30,6 +30,9 @@ func main() {
 		Linux: &linux.Options{
 			WebviewGpuPolicy: linux.WebviewGpuPolicyOnDemand,
 		},
+		DragAndDrop: &options.DragAndDrop{
+			EnableFileDrop: true,
+		},
 	})
 	if err != nil {
 		println("Error:", err.Error())

@@ -8,7 +8,10 @@ import (
 func TestCall(t *testing.T) {
 	// Test the Ask function
 	prompt := "Write a long poem about AI in french"
-	stream, history := Ask(prompt, nil, "openai")
+	stream, history := Ask([]MessageContent{{
+		Type: "text",
+		Text: &prompt,
+	}}, nil, "openai")
 
 	for chunk := range stream {
 		if chunk.Choices[0].Delta.Content == "" {
@@ -24,8 +27,8 @@ func TestCall(t *testing.T) {
 	if history[0].Role != System {
 		t.Error("First message in history is not the system message")
 	}
-	if history[1].Content != prompt {
-		t.Errorf("First message in history is not the prompt: %s", history[0].Content)
+	if history[1].Content[0].Text != &prompt {
+		t.Errorf("First message in history is not the prompt: %v", history[0].Content[0].Text)
 	}
 }
 
@@ -33,7 +36,10 @@ func TestIds(t *testing.T) {
 	// ask 2 questions, the first chunks should have the same id
 	prompt1 := "Write a long poem about AI in french"
 	prompt2 := "Write a long poem about AI in english"
-	stream1, _ := Ask(prompt1, nil, "openai")
+	stream1, _ := Ask([]MessageContent{{
+		Type: "text",
+		Text: &prompt1,
+	}}, nil, "openai")
 	id1 := ""
 	for chunk1 := range stream1 {
 		if id1 == "" {
@@ -45,7 +51,10 @@ func TestIds(t *testing.T) {
 		}
 	}
 	id2 := ""
-	stream2, _ := Ask(prompt2, nil, "openai")
+	stream2, _ := Ask([]MessageContent{{
+		Type: "text",
+		Text: &prompt2,
+	}}, nil, "openai")
 	for chunk2 := range stream2 {
 		if id2 == "" {
 			id2 = chunk2.Id

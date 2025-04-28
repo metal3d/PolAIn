@@ -43,11 +43,19 @@ type ModelDefinition struct {
 	Provider    string `json:"provider"`
 	Uncensorded bool   `json:"uncensored,omitempty"`
 	Reasoning   bool   `json:"reasoning,omitempty"`
+	Vision      bool   `json:"vision,omitempty"`
+	Audio       bool   `json:"audio,omitempty"`
+}
+
+type MessageContent struct {
+	Type     string             `json:"type"`
+	ImageURL *map[string]string `json:"image_url,omitempty"`
+	Text     *string            `json:"text,omitempty"`
 }
 
 type Message struct {
-	Role    Role   `json:"role"`
-	Content string `json:"content"`
+	Role    Role             `json:"role"`
+	Content []MessageContent `json:"content"`
 }
 
 type OpenAIRequest struct {
@@ -84,7 +92,7 @@ func init() {
 
 // Ask sends a request to the OpenAI API and returns a channel to receive the response chunks and the updated message history.
 // TODO: find the seed in the prompts and manage a real uint rand value, because the LLM always want to provide 12345 :(
-func Ask(prompt string, history []*Message, model string) (chan *OpenAIChunk, []*Message) {
+func Ask(prompt []MessageContent, history []*Message, model string) (chan *OpenAIChunk, []*Message) {
 	history = fixSystemPrompt(history, model)
 
 	history = append(history, &Message{
@@ -227,28 +235,38 @@ func GetModels() []ModelDefinition {
 
 // fixSystemPrompt checks if the first message in the history is a system prompt.
 func fixSystemPrompt(history []*Message, model string) []*Message {
-	var systemPrompt string
+	var systemPrompt *string
 	switch model {
 	case "unity":
-		systemPrompt = unityPrompt
+		systemPrompt = &unityPrompt
 	default:
-		systemPrompt = defaultPrompt
+		systemPrompt = &defaultPrompt
 	}
 
 	if len(history) == 0 {
 		// no history, add the system prompt
 		history = []*Message{
 			{
-				Role:    System,
-				Content: systemPrompt,
+				Role: System,
+				Content: []MessageContent{
+					{
+						Type: "text",
+						Text: systemPrompt,
+					},
+				},
 			},
 		}
 	} else if history[0].Role != System {
 		// the first message is not a system prompt, add it
 		history = append([]*Message{
 			{
-				Role:    System,
-				Content: systemPrompt,
+				Role: System,
+				Content: []MessageContent{
+					{
+						Type: "text",
+						Text: systemPrompt,
+					},
+				},
 			},
 		}, history...)
 	}

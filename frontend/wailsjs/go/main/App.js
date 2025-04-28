@@ -14,6 +14,10 @@ export function NewConversation() {
   return window['go']['main']['App']['NewConversation']();
 }
 
+export function RemoveFile(arg1) {
+  return window['go']['main']['App']['RemoveFile'](arg1);
+}
+
 export function T(arg1, arg2, arg3) {
   return window['go']['main']['App']['T'](arg1, arg2, arg3);
 }

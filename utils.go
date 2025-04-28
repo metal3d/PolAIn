@@ -13,7 +13,7 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 )
 
-func encodeImage(filename string) (string, error) {
+func encodeFile(filename string) (string, error) {
 	// Open the image file
 	file, err := os.Open(filename)
 	if err != nil {
@@ -31,8 +31,7 @@ func encodeImage(filename string) (string, error) {
 }
 
 func MDtoHTML(source string) []byte {
-	// extensions := parser.NoIntraEmphasis | parser.Tables | parser.FencedCode | parser.Autolink | parser.Strikethrough | parser.SpaceHeadings | parser.HeadingIDs | parser.BackslashLineBreak | parser.DefinitionLists
-	extensions := parser.CommonExtensions
+	extensions := parser.CommonExtensions | parser.Autolink
 	p := parser.NewWithExtensions(extensions)
 	doc := p.Parse([]byte(source))
 

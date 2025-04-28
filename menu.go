@@ -22,6 +22,9 @@ func (mp *ModelPresentation) GetLabel() string {
 	} else {
 		label = mp.Name + "\n➟" + mp.Description
 	}
+	if mp.Vision {
+		label += "\n➟" + "👁️ Vision"
+	}
 	return label
 }
 

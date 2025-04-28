@@ -6,6 +6,8 @@ export namespace main {
 	    provider: string;
 	    uncensored?: boolean;
 	    reasoning?: boolean;
+	    vision?: boolean;
+	    audio?: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new ModelPresentation(source);
@@ -18,6 +20,8 @@ export namespace main {
 	        this.provider = source["provider"];
 	        this.uncensored = source["uncensored"];
 	        this.reasoning = source["reasoning"];
+	        this.vision = source["vision"];
+	        this.audio = source["audio"];
 	    }
 	}
 
