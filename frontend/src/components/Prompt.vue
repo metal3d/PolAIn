@@ -7,12 +7,16 @@ const answering = ref(false)
 const props = defineProps(['sendPrompt']);
 const userInput = useTemplateRef('userInput');
 
-const placeholder = ref('');
-const promptSend = ref('')
+const translations = ref({
+  placeholder: "",
+  promptSend: "",
+})
 
 async function updateTranslation() {
-  placeholder.value = await _("prompt.placeholder")
-  promptSend.value = await _("prompt.send")
+  translations.value = {
+    placeholder: await _("prompt.placeholder"),
+    promptSend: await _("prompt.send"),
+  }
 }
 
 function sendPrompt() {
@@ -42,17 +46,28 @@ onMounted(() => {
   updateTranslation()
 });
 
-
-
-
 </script>
 <template>
   <div class="prompt-container">
-    <textarea :placeholder="placeholder" ref="userInput" :disabled="answering" @keyup="handleTextareaKeys" />
-    <button @click="sendPrompt()" ref="sendButton" :disabled="answering">{{ promptSend }}</button>
+    <div class="prompt-wrapper">
+      <div class="upload-buttons">
+        <button class="upload image" title="Upload image">🖼️</button>
+        <button class="upload audio" title="Upload audio">🎧</button>
+      </div>
+      <textarea :placeholder="translations.placeholder" ref="userInput" :disabled="answering"
+        @keyup="handleTextareaKeys" />
+    </div>
+    <button @click="sendPrompt()" ref="sendButton" :disabled="answering">{{ translations.promptSend }}</button>
   </div>
 </template>
 <style>
+.prompt-wrapper {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
 .prompt-container {
   display: flex;
   padding: 10px;
@@ -61,15 +76,15 @@ onMounted(() => {
 .prompt-container textarea {
   flex-grow: 1;
   padding: 10px;
-  border: 1px solid var(--adw-color-border);
+  border: 1px solid color-mix(in srgb, var(--view-fg-color), #000 15%);
   border-radius: 5px;
   margin-right: 5px;
 }
 
 .prompt-container button {
   padding: 10px 20px;
-  background-color: var(--adw-color-success);
-  color: var(--adw-color-fg);
+  background-color: var(--success-bg-color);
+  color: var(--success-fg-color);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -81,10 +96,20 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
 button:hover:not(:disabled) {
-  background-color: var(--adw-color-success);
+  background-color: var(--success-bg-color);
   opacity: .8;
 }
 
+.upload-buttons {
+  position: absolute;
+  right: 0;
+  display: flex;
+}
 
+button.upload {
+  font-size: 1rem;
+  background-color: transparent;
+}
 </style>

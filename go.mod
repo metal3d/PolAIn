@@ -3,6 +3,7 @@ module PolAIn
 go 1.23
 
 require (
+	github.com/gomarkdown/markdown v0.0.0-20250311123330-531bef5e742b
 	github.com/jeandeaual/go-locale v0.0.0-20241217141322-fcc2cadd6f08
 	github.com/wailsapp/wails/v2 v2.10.1
 )

@@ -10,6 +10,16 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+// Rendered struct represents the rendered response for the view.
+type Rendered struct {
+	// Chunk is the chunk received from the OpenAI API.
+	Chunk *api.OpenAIChunk `json:"chunk"`
+	// Html is the cummulated HTML from the beginning of the reponse.
+	Html string `json:"html"`
+	// ThinkingHTML is the cummulated HTML from the beginning of the reponse of the reasoning model.
+	ThinkingHTML string `json:"thinkingHtml"`
+}
+
 // App struct
 type App struct {
 	ctx     context.Context
@@ -32,17 +42,34 @@ func (a *App) Ask(prompt string) error {
 	runtime.EventsEmit(a.ctx, "ask-start", prompt)
 	defer runtime.EventsEmit(a.ctx, "ask-done", prompt)
 
+	// call the AI API
 	stream, history := api.Ask(prompt, a.history, currentModel.Name)
 	a.history = history
-	buffer := ""
+
+	// on chunk received, fix the markdown, create HTML and emit the event
+	var buffer, html, thinkingBuffer, thinkingHtml string
 	for chunk := range stream {
-		runtime.EventsEmit(a.ctx, "chunk", chunk)
-		buffer += chunk.Choices[0].Delta.Content
+		if chunk.Thinking {
+			thinkingBuffer += chunk.Choices[0].Delta.Content
+			thinkingBuffer = fixKatex(thinkingBuffer)
+			thinkingHtml = string(MDtoHTML(thinkingBuffer))
+		} else {
+			buffer += chunk.Choices[0].Delta.Content
+			buffer = fixKatex(buffer)
+			html = string(MDtoHTML(buffer))
+		}
+
+		runtime.EventsEmit(a.ctx, "chunk", Rendered{
+			Chunk:        chunk,
+			Html:         string(html),
+			ThinkingHTML: string(thinkingHtml),
+		})
 	}
 	a.history = append(history, &api.Message{
 		Role:    api.Assistant,
 		Content: buffer,
 	})
+	log.Println("Final buffer", buffer)
 	return nil
 }
 

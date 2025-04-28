@@ -2,27 +2,30 @@
 import { ref, onMounted, useTemplateRef } from 'vue';
 import { Ask, GetSelectedModel } from "../wailsjs/go/main/App";
 import { EventsOn } from "../wailsjs/runtime/runtime";
-import MarkdownIt from 'markdown-it';
 import Prompt from "./components/Prompt.vue";
 import Message from "./components/Message.vue";
 import _ from "./i18n.js"
 
-const history = ref([]);
-const messageHistory = useTemplateRef('messageHistory');
-const waitingResponse = ref(false);
-const currentModel = ref("");
-const showHelp = ref(false);
-const markdown = new MarkdownIt();
 
-const currentModelLabel = ref("")
-const helpText = ref("")
-const closeLabel = ref("")
+const messageHistory = useTemplateRef('messageHistory');
+const history = ref([]);
+const waitingResponse = ref(false);
+const currentModel = ref({ name: "" });
+const showHelp = ref(false);
+
+const translations = ref({
+  currentModelLabel: "",
+  helpText: "",
+  closeLabel: "",
+});
 
 // Update translations
 async function updateTranslation() {
-  currentModelLabel.value = await _("model.current")
-  helpText.value = await _("about.help")
-  closeLabel.value = await _("close")
+  translations.value = {
+    currentModelLabel: await _("model.current"),
+    helpText: await _("about.help", true),
+    closeLabel: await _("close"),
+  }
 }
 
 // when content changes
@@ -30,18 +33,23 @@ function onContent() {
   messageHistory.value.scrollTop = messageHistory.value.scrollHeight;
 }
 
-function upsertMessage(chunk) {
+function upsertMessage(origChunk) {
+  const chunk = origChunk.chunk;
+  const html = origChunk.html;
+  const thinking = origChunk.thinkingHtml;
   const message = history.value.find((msg) => msg.id === chunk.id);
   if (!message) {
     const newMessage = {
       id: chunk.id,
       role: chunk.role,
-      content: chunk.choices[0].delta.content,
+      content: html,
+      thinking: thinking,
     };
     history.value.push(newMessage);
-    return newMessage;
+  } else {
+    message.thinking = thinking;
+    message.content = html
   }
-  message.content += chunk.choices[0].delta.content;
   return message;
 }
 
@@ -51,15 +59,14 @@ function sendPrompt(prompt) {
     id: Date.now(),
     role: "user",
     content: prompt,
+    thinking: "",
   };
   history.value.push(message);
   waitingResponse.value = true;
   onContent();
   Ask(prompt)
-    .then((response) => {
+    .then(() => {
       waitingResponse.value = false;
-      console.log("Response received.", response);
-      message.content = message.content
     });
 }
 
@@ -91,49 +98,34 @@ onMounted(() => {
   });
   updateTranslation();
   setCurrentModel();
-
 });
 
-// Open all links externally
-document.body.addEventListener('click', function (e) {
-  if (e.target && e.target.nodeName == 'A' && e.target.href) {
-    const url = e.target.href;
-    if (
-      !url.startsWith('http://#') &&
-      !url.startsWith('file://') &&
-      !url.startsWith('http://wails.localhost:')
-    ) {
-      e.preventDefault();
-      window.runtime.BrowserOpenURL(url);
-    }
-  }
-});
 
 </script>
 
 <template>
   <div class="on-top">
-    <p>{{ currentModelLabel }} :
+    <p>{{ translations.currentModelLabel }} :
       <strong>{{ currentModel.name }}</strong>
       <span v-if="currentModel.uncensored"> 🔞</span>
+      <small> :: {{ currentModel.description }}</small>
     </p>
-    <small>{{ currentModel.description }}</small>
   </div>
   <div class="message-history" ref="messageHistory">
-    <Message v-for="message in history" :key="message.id" :message="message" :onContent="onContent" />
+    <Message v-for="message in history" :key="message.id" :message="message" :onContent="onContent"
+      :model="currentModel" />
     <div v-if="waitingResponse" class="thinking">
       <span>🧠</span>
       <span>🧠</span>
       <span>🧠</span>
     </div>
-    <!--div v-if="waitingResponse" class="thinking">Loading</div-->
   </div>
 
   <Prompt :sendPrompt="sendPrompt" />
   <div class="popup" v-if="showHelp">
-    <article v-html="markdown.render(helpText)">
+    <article v-html="translations.helpText">
     </article>
-    <button @click="showHelp = false">{{ closeLabel }}</button>
+    <button @click="showHelp = false">{{ translations.closeLabel }}</button>
   </div>
 </template>
 
@@ -142,7 +134,7 @@ document.body.addEventListener('click', function (e) {
   position: fixed;
   display: flex;
   flex-direction: column;
-  background-color: var(--adw-color-bg);
+  background-color: var(--window-bg-color);
   padding: 10px;
   border-radius: .5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -161,8 +153,8 @@ document.body.addEventListener('click', function (e) {
 
 .popup button {
   padding: 10px;
-  background-color: var(--adw-color-success);
-  color: var(--adw-color-fg);
+  background-color: var(--success-bg-color);
+  color: var(--success-fg-color);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -170,7 +162,30 @@ document.body.addEventListener('click', function (e) {
 
 .popup blockquote {
   font-style: italic;
-  color: #555;
+  background-color: var(--slate-bg-color);
+  color: var(--slate-fg-color);
+  padding: 1rem;
+  position: relative;
+  border-radius: 1rem;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.3);
+}
+
+.popup blockquote::before {
+  content: "«";
+  font-size: 2rem;
+  color: var(--slate-fg-color);
+  position: absolute;
+  top: 0;
+  left: -1rem;
+}
+
+.popup blockquote::after {
+  content: "»";
+  font-size: 2rem;
+  color: var(--slate-fg-color);
+  position: absolute;
+  bottom: 0;
+  right: -1rem;
 }
 
 small {
@@ -179,17 +194,12 @@ small {
 
 
 .on-top {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 10px;
   z-index: 1000;
-  padding: 1rem;
   border-radius: .5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   text-align: center;
-  background-color: var(--adw-color-view-bg);
-  color: var(--adw-color-fg);
+  background-color: var(--view-bg-color);
+  color: var(--view-fg-color);
 }
 
 .on-top p {
@@ -200,7 +210,6 @@ small {
   flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
-  background-color: var(--adw-color-bg);
 }
 
 
@@ -208,14 +217,11 @@ small {
   display: flex;
   justify-content: center;
   gap: 5px;
-  /* Espacement entre les span */
 }
 
 .thinking>span {
   opacity: 0;
-  /* Initialement caché */
   animation: thinkingAnimation 3s infinite;
-  /* Animation */
 }
 
 .thinking>span:nth-child(1) {

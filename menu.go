@@ -4,6 +4,7 @@ import (
 	"PolAIn/internal/api"
 
 	"github.com/wailsapp/wails/v2/pkg/menu"
+	"github.com/wailsapp/wails/v2/pkg/menu/keys"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -17,9 +18,9 @@ func (mp *ModelPresentation) GetLabel() string {
 	icon := "🔞"
 	var label string
 	if mp.Uncensorded {
-		label = icon + mp.Name + "\n" + mp.Description
+		label = icon + mp.Name + "\n➟" + mp.Description
 	} else {
-		label = mp.Name + "\n" + mp.Description
+		label = mp.Name + "\n➟" + mp.Description
 	}
 	return label
 }
@@ -64,8 +65,9 @@ func (a *App) getMenu() *menu.Menu {
 		Type:  menu.TextType,
 		SubMenu: menu.NewMenuFromItems(
 			&menu.MenuItem{
-				Label: a.Translate("menu.conversation.new"),
-				Type:  menu.TextType,
+				Label:       a.Translate("menu.conversation.new"),
+				Accelerator: keys.CmdOrCtrl("n"),
+				Type:        menu.TextType,
 				Click: func(_ *menu.CallbackData) {
 					a.NewConversation()
 				},
@@ -85,9 +87,10 @@ func (a *App) getMenu() *menu.Menu {
 		Type:  menu.TextType,
 		SubMenu: menu.NewMenuFromItems(
 			&menu.MenuItem{
-				Label: a.Translate("menu.help.title"),
-				Role:  menu.WindowMenuRole,
-				Type:  menu.TextType,
+				Label:       a.Translate("menu.help.title"),
+				Accelerator: keys.CmdOrCtrl("h"),
+				Role:        menu.WindowMenuRole,
+				Type:        menu.TextType,
 				Click: func(_ *menu.CallbackData) {
 					runtime.EventsEmit(a.ctx, "show-help")
 				},

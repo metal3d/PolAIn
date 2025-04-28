@@ -14,8 +14,8 @@ export function NewConversation() {
   return window['go']['main']['App']['NewConversation']();
 }
 
-export function T(arg1, arg2) {
-  return window['go']['main']['App']['T'](arg1, arg2);
+export function T(arg1, arg2, arg3) {
+  return window['go']['main']['App']['T'](arg1, arg2, arg3);
 }
 
 export function Translate(arg1) {

@@ -3,9 +3,11 @@ package api
 import (
 	"bufio"
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type Role string
@@ -16,20 +18,13 @@ const (
 	chanBufferSize  = 0
 )
 
-const systemPrompt = `You are a very smart and helpful assistant. 
-You are able to answer any question and provide information on a wide range of topics. 
-You are also able to generate text in a variety of styles and formats, including poetry, prose, and technical writing. 
-You are always polite and respectful, and you strive to provide the best possible answers to your users' questions.
+//go:embed prompts/unity.txt
+var unityPrompt string
 
-If the user asks for an image, use the pollinations url using this template using url encoded description (translate in english if needed),
-encode the description for URL (space become %20, etc), set width and height to something reasonable or use the requirements 
-from the user (adapt to square of 2 values, you may use landscape, square and portrait resolution), and use a random seed value 
-to force generation of new image, the seed should be a valid unsigned integer:
+//go:embed prompts/default.txt
+var defaultPrompt string
 
-![Image description](https://image.pollinations.ai/prompt/{description}?nologo=true&private=true&enhance=true&width={width}&height={height}&seed={seed})
-
-You answer using markdown. Use the language of the user.
-`
+var modelList map[string]ModelDefinition
 
 const (
 	Assistant Role = "assistant"
@@ -61,10 +56,12 @@ type OpenAIRequest struct {
 	Model    string     `json:"model"`
 	Private  bool       `json:"private"`
 }
+
 type OpenAIChunk struct {
-	Role    Role     `json:"role"`
-	Choices []Choice `json:"choices"`
-	Id      string   `json:"id"`
+	Role     Role     `json:"role"`
+	Choices  []Choice `json:"choices"`
+	Thinking bool     `json:"thinking"`
+	Id       string   `json:"id"`
 }
 
 type Choice struct {
@@ -76,17 +73,19 @@ type Delta struct {
 	Content string `json:"content"`
 }
 
+func init() {
+	// keep the model list in memory
+	modelList = make(map[string]ModelDefinition)
+	models := GetModels()
+	for _, model := range models {
+		modelList[model.Name] = model
+	}
+}
+
 // Ask sends a request to the OpenAI API and returns a channel to receive the response chunks and the updated message history.
 // TODO: find the seed in the prompts and manage a real uint rand value, because the LLM always want to provide 12345 :(
 func Ask(prompt string, history []*Message, model string) (chan *OpenAIChunk, []*Message) {
-	if len(history) == 0 {
-		history = []*Message{
-			{
-				Role:    System,
-				Content: systemPrompt,
-			},
-		}
-	}
+	history = fixSystemPrompt(history, model)
 
 	history = append(history, &Message{
 		Role:    User,
@@ -108,6 +107,7 @@ func Ask(prompt string, history []*Message, model string) (chan *OpenAIChunk, []
 // CallAPI sends a request to the OpenAI API and streams the response to the provided channel.
 func CallAPI(r *OpenAIRequest, stream chan *OpenAIChunk) error {
 	defer close(stream)
+
 	client := &http.Client{}
 	data, err := json.Marshal(r)
 	if err != nil {
@@ -138,6 +138,11 @@ func CallAPI(r *OpenAIRequest, stream chan *OpenAIChunk) error {
 
 	scanner := bufio.NewScanner(resp.Body)
 	defer resp.Body.Close()
+
+	model := GetModel(r.Model)
+	// let's go!
+	hadThought := false
+	thinking := false
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) < 6 || line[:6] != "data: " {
@@ -152,6 +157,7 @@ func CallAPI(r *OpenAIRequest, stream chan *OpenAIChunk) error {
 			log.Println("Error unmarshalling chunk:", err)
 			continue
 		}
+
 		// get the content
 		if len(chunk.Choices) == 0 {
 			continue
@@ -161,6 +167,21 @@ func CallAPI(r *OpenAIRequest, stream chan *OpenAIChunk) error {
 			return nil
 		}
 		content := choice.Delta.Content
+
+		// case of reasoning
+		if model.Reasoning && !hadThought {
+			if strings.Contains(content, "<think>") {
+				thinking = true
+			} else if strings.Contains(content, "</think>") {
+				thinking = false
+				hadThought = true
+			}
+			chunk.Thinking = thinking
+			// clean the content
+			content = strings.ReplaceAll(content, "<think>", "")
+			content = strings.ReplaceAll(content, "</think>", "")
+		}
+
 		if content != "" {
 			chunk.Role = Assistant
 			stream <- chunk
@@ -170,8 +191,25 @@ func CallAPI(r *OpenAIRequest, stream chan *OpenAIChunk) error {
 	return nil
 }
 
+func GetModel(name string) ModelDefinition {
+	if model, ok := modelList[name]; ok {
+		return model
+	}
+	return ModelDefinition{}
+}
+
 // GetModels fetches the list of available models from the OpenAI API.
 func GetModels() []ModelDefinition {
+	if len(modelList) != 0 {
+		return func() []ModelDefinition {
+			models := make([]ModelDefinition, 0, len(modelList))
+			for _, model := range modelList {
+				models = append(models, model)
+			}
+			return models
+		}()
+	}
+
 	resp, err := http.Get(modelsListURL)
 	if err != nil {
 		log.Println("Error fetching models:", err)
@@ -185,4 +223,34 @@ func GetModels() []ModelDefinition {
 		return nil
 	}
 	return response
+}
+
+// fixSystemPrompt checks if the first message in the history is a system prompt.
+func fixSystemPrompt(history []*Message, model string) []*Message {
+	var systemPrompt string
+	switch model {
+	case "unity":
+		systemPrompt = unityPrompt
+	default:
+		systemPrompt = defaultPrompt
+	}
+
+	if len(history) == 0 {
+		// no history, add the system prompt
+		history = []*Message{
+			{
+				Role:    System,
+				Content: systemPrompt,
+			},
+		}
+	} else if history[0].Role != System {
+		// the first message is not a system prompt, add it
+		history = append([]*Message{
+			{
+				Role:    System,
+				Content: systemPrompt,
+			},
+		}, history...)
+	}
+	return history
 }

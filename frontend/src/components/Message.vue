@@ -1,13 +1,14 @@
 <script setup>
-import { watch, nextTick, useTemplateRef, computed } from 'vue';
-import MarkdownIt from 'markdown-it';
-import MarkdownItHighlight from 'markdown-it-highlightjs';
+import { watch, nextTick, useTemplateRef, computed, onMounted, ref } from 'vue';
+import _ from "../i18n.js"
+import 'mathjax/es5/tex-mml-svg.js';
+import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 
-const props = defineProps(['message', "onContent"]);
-const markdown = new MarkdownIt()
-  .use(MarkdownItHighlight);
+
+const props = defineProps(['message', "onContent", "model"]);
 const container = useTemplateRef('message');
+
 const cssClasses = computed(() => {
   return {
     'message-content': true,
@@ -16,11 +17,33 @@ const cssClasses = computed(() => {
   };
 });
 
+const translations = ref({
+  thinkingLabel: "",
+});
+
+async function updateTranslation() {
+  translations.value.thinkingLabel = await _("thinking.label")
+}
+
+async function hl() {
+  await nextTick(); // wait for DOM updates
+
+  await MathJax.typesetPromise();
+
+  const pre = container.value?.querySelectorAll('pre') || [];
+  pre.forEach((block) => {
+    if (block.querySelectorAll('code').length === 0) {
+      return;
+    }
+    hljs.highlightElement(block);
+  });
+  await enhanceImages();
+}
+
 
 const enhanceImages = async () => {
   await nextTick(); // wait for DOM updates 
   const images = container.value?.querySelectorAll('img') || [];
-  console.log('Images found:', images.length);
   images.forEach(img => {
     // Skip if already wrapped
     if (img.parentElement?.classList.contains('image-wrapper')) return;
@@ -54,18 +77,33 @@ const enhanceImages = async () => {
   });
 };
 
-watch(() => props.message.content, enhanceImages, { immediate: true });
+//watch(() => props.message.content, enhanceImages, { immediate: true });
+watch(() => props.message.content, hl, { immediate: true, });
+onMounted(() => {
+  MathJax.svgStylesheet();
+  updateTranslation();
+});
 </script>
 
 <template>
   <div class="message-container">
+    <div class="reasoning" v-if="props.model?.reasoning && props.message.role == 'assistant'">
+      <details>
+        <summary>{{ translations.thinkingLabel }}</summary>
+        <div v-html="props.message.thinking"></div>
+      </details>
+    </div>
     <div :class="cssClasses">
-      <div ref="message" v-html="markdown.render(props.message.content)"></div>
+      <div ref="message" v-html="props.message.content"></div>
     </div>
   </div>
 </template>
 
 <style>
+.hljs {
+  padding: 1rem;
+}
+
 .message-container {
   display: flex;
   flex-direction: column;
@@ -78,17 +116,39 @@ watch(() => props.message.content, enhanceImages, { immediate: true });
   word-wrap: break-word;
   color: var(--adw-color-fg);
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.3);
-  background-color: var(--adw-color-border);
+  background-color: var(--view-bg-color);
+  position: rlative;
 }
 
 .message-content.assistant {
-  background-color: var(--adw-color-view-bg);
+  background-color: var(--slate-bg-color);
+  color: var(--slate-fg-color);
 }
 
+.reasoning {
+  margin-left: auto;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
 
+.reasoning summary {
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.reasoning details div {
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--slate-bg-color) 25%, transparent);
+  padding: 1rem;
+}
 
 @media (min-width: 974px) {
-  .message-content {
+
+  .message-content,
+  .reasoning {
     max-width: 80%;
   }
 
@@ -96,13 +156,16 @@ watch(() => props.message.content, enhanceImages, { immediate: true });
     margin-right: auto;
   }
 
-  .message-content.assistant {
+  .message-content.assistant,
+  .reasoning {
     margin-left: auto;
   }
 }
 
 @media (min-width: 1280px) {
-  .message-content {
+
+  .message-content,
+  .reasoning {
     max-width: 90%;
   }
 
@@ -112,8 +175,8 @@ watch(() => props.message.content, enhanceImages, { immediate: true });
 }
 
 .message-content p {
-  display: flex;
-  flex-direction: column;
+  display: block;
+  position: relative;
 }
 
 .message-content p img {
@@ -138,10 +201,7 @@ watch(() => props.message.content, enhanceImages, { immediate: true });
 }
 
 .spinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: auto;
   width: 24px;
   height: 24px;
   border: 3px solid #ccc;
@@ -149,6 +209,16 @@ watch(() => props.message.content, enhanceImages, { immediate: true });
   border-radius: 50%;
   animation: spin 1s linear infinite;
   z-index: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.image-wrapper {
+  position: relative;
+  text-align: center;
+  width: 100%;
 }
 
 @keyframes spin {
