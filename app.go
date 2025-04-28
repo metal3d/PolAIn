@@ -92,14 +92,16 @@ func (a *App) Ask(prompt string) error {
 	toSend := []api.MessageContent{message}
 
 	// append the files to send
-	for _, f := range filesToSend {
-		toSend = append(toSend, api.MessageContent{
-			Type: "image_url",
-			ImageURL: &map[string]string{
-				"url": f,
+	if currentModel.Vision {
+		for _, f := range filesToSend {
+			toSend = append(toSend, api.MessageContent{
+				Type: "image_url",
+				ImageURL: &map[string]string{
+					"url": f,
+				},
 			},
-		},
-		)
+			)
+		}
 	}
 
 	// call the AI API
