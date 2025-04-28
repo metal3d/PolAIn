@@ -1,10 +1,11 @@
 <script setup>
 import { useTemplateRef, onMounted, ref } from "vue";
 import { EventsOn } from "../../wailsjs/runtime/runtime";
+import { SelectFiles } from "../../wailsjs/go/main/App";
 import _ from "../i18n.js"
 
 const answering = ref(false)
-const props = defineProps(['sendPrompt']);
+const props = defineProps(['sendPrompt', 'model']);
 const userInput = useTemplateRef('userInput');
 
 const translations = ref({
@@ -16,9 +17,11 @@ async function updateTranslation() {
   translations.value = {
     placeholder: await _("prompt.placeholder"),
     promptSend: await _("prompt.send"),
+    uploadImage: await _("prompt.upload.image"),
   }
 }
 
+// send the prompt to the API
 function sendPrompt() {
   const prompt = userInput.value.value;
   if (prompt) {
@@ -28,11 +31,17 @@ function sendPrompt() {
   }
 }
 
+// Make the textarea send the prompt when Enter is pressed without modifiers.
 function handleTextareaKeys(event) {
   if (event.key === "Enter" && !(event.metaKey || event.ctrlKey || event.shiftKey)) {
     event.preventDefault(); // Prevent default behavior of Enter key
     sendPrompt();
   }
+}
+
+// append a file to the vision model prompt
+function addFile(type) {
+  SelectFiles(type)
 }
 
 onMounted(() => {
@@ -51,8 +60,9 @@ onMounted(() => {
   <div class="prompt-container">
     <div class="prompt-wrapper">
       <div class="upload-buttons">
-        <button class="upload image" title="Upload image">🖼️</button>
-        <button class="upload audio" title="Upload audio">🎧</button>
+        <button class="upload image" :title="translations.uploadImage" v-if="props.model?.vision"
+          @click="addFile('image')">📸</button>
+        <!--button class=" upload audio" title="Upload audio">🎧</button-->
       </div>
       <textarea :placeholder="translations.placeholder" ref="userInput" :disabled="answering"
         @keyup="handleTextareaKeys" />
@@ -109,7 +119,7 @@ button:hover:not(:disabled) {
 }
 
 button.upload {
-  font-size: 1rem;
+  font-size: 1.6rem;
   background-color: transparent;
 }
 </style>

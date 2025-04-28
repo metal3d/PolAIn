@@ -2,6 +2,7 @@
   "close": "Close",
   "prompt.placeholder": "Type your question here",
   "prompt.send": "Send",
+  "prompt.upload.image": "Add an image",
   "menu.conversation": "Conversation",
   "menu.conversation.new": "New conversation",
   "menu.models": "Models",

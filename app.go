@@ -46,18 +46,38 @@ func (a *App) startup(ctx context.Context) {
 				Title:   "Error",
 			})
 		} else {
-			// encore files
-			for _, f := range files {
-				content, err := encodeFile(f)
-				if err != nil {
-					log.Println("Error encoding image:", err)
-					continue
-				}
-				filesToSend = append(filesToSend, content)
-				runtime.EventsEmit(ctx, "register-files", content)
-			}
+			a.AddFiles(files)
 		}
 	})
+}
+
+func (a *App) AddFiles(files []string) {
+	for _, f := range files {
+		content, err := encodeFile(f)
+		if err != nil {
+			log.Println("Error encoding image:", err)
+			continue
+		}
+		filesToSend = append(filesToSend, content)
+		runtime.EventsEmit(a.ctx, "register-files", content)
+	}
+}
+
+func (a *App) SelectFiles(filetype string) {
+	filters := []runtime.FileFilter{}
+	if filetype == "image" {
+		filters = append(filters, runtime.FileFilter{
+			DisplayName: "Images",
+			Pattern:     "*.jpeg;*.jpg;*.png;*.gif;*.webp",
+		})
+	}
+	filename, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Filters: filters,
+	})
+	if filename == "" || err != nil {
+		return
+	}
+	a.AddFiles([]string{filename})
 }
 
 func (a *App) RemoveFile(pos int) bool {

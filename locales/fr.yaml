@@ -1,6 +1,7 @@
 close: Fermer
 prompt.placeholder: Tapez votre question ici
 prompt.send: Envoyer
+prompt.upload.image: Ajouter une image
 menu.conversation: Conversation
 menu.conversation.new: Nouvelle conversation
 menu.models: Modèles
@@ -15,6 +16,7 @@ model.alert.uncensored.message: |
 
 menu.help.title: Aide et informations
 thinking.label: Raisonnement du modèle
+
 
 about.help: |
   # PolAIn

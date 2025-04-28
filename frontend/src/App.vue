@@ -127,7 +127,7 @@ onMounted(() => {
   </div>
 
   <Files :class="{ 'hidden': !currentModel.vision }" />
-  <Prompt :sendPrompt="sendPrompt" />
+  <Prompt :sendPrompt="sendPrompt" :model="currentModel" />
   <div class="popup" v-if="showHelp">
     <article v-html="translations.helpText">
     </article>
