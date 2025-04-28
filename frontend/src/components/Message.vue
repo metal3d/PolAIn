@@ -25,24 +25,32 @@ async function updateTranslation() {
   translations.value.thinkingLabel = await _("thinking.label")
 }
 
-async function hl() {
+
+async function enhanceHighlight() {
+  return new Promise((resolve) => {
+    const pre = container.value?.querySelectorAll('pre') || [];
+    pre.forEach((block) => {
+      if (block.querySelectorAll('code').length === 0) {
+        return;
+      }
+      hljs.highlightElement(block);
+    });
+    resolve()
+  })
+}
+
+async function formatMessage() {
   await nextTick(); // wait for DOM updates
 
-  await MathJax.typesetPromise();
+  MathJax.typesetPromise()
+    .then(enhanceHighlight)
+    .then(enhanceImages)
+    .then(props.onContent);
 
-  const pre = container.value?.querySelectorAll('pre') || [];
-  pre.forEach((block) => {
-    if (block.querySelectorAll('code').length === 0) {
-      return;
-    }
-    hljs.highlightElement(block);
-  });
-  await enhanceImages();
 }
 
 
 const enhanceImages = async () => {
-  await nextTick(); // wait for DOM updates 
   const images = container.value?.querySelectorAll('img') || [];
   images.forEach(img => {
     // Skip if already wrapped
@@ -77,8 +85,7 @@ const enhanceImages = async () => {
   });
 };
 
-//watch(() => props.message.content, enhanceImages, { immediate: true });
-watch(() => props.message.content, hl, { immediate: true, });
+watch(() => props.message.content, formatMessage, { immediate: true, });
 onMounted(() => {
   MathJax.svgStylesheet();
   updateTranslation();
