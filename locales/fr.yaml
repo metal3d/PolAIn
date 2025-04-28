@@ -1,7 +1,7 @@
 close: Fermer
 prompt.placeholder: Tapez votre question ici
 prompt.send: Envoyer
-menu.conversation: Convesation
+menu.conversation: Conversation
 menu.conversation.new: Nouvelle conversation
 menu.models: Modèles
 conversation.new.confirm: Cela effacera votre conversation en cours, êtes vous sûr ?
