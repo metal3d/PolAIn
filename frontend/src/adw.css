@@ -10,6 +10,9 @@
 
   --slate-bg-color: #3d3846;
   --slate-fg-color: #ffffff;
+
+  --error-bg-color: #e01b24;
+  --error-fg-colo: r: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +25,8 @@
 
     --success-bg-color: #26a269;
     --success-fg-color: #ffffff;
+
+    --error-bg-color: #c01c28;
+    --error-fg-colo: r: #ffffff;
   }
 }

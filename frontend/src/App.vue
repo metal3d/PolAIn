@@ -13,6 +13,12 @@ const history = ref([]);
 const waitingResponse = ref(false);
 const currentModel = ref({ name: "" });
 const showHelp = ref(false);
+const toastMessage = ref({
+  hidden: true,
+  type: "",
+  title: "",
+  message: "",
+})
 
 const translations = ref({
   currentModelLabel: "",
@@ -27,6 +33,18 @@ async function updateTranslation() {
     helpText: await _("about.help", true),
     closeLabel: await _("close"),
   }
+}
+
+function showToast(type, title, message) {
+  toastMessage.value = {
+    hidden: false,
+    type: type,
+    title: title,
+    message: message,
+  };
+  setTimeout(() => {
+    toastMessage.value.hidden = true;
+  }, 5000);
 }
 
 // when content changes
@@ -68,6 +86,13 @@ function sendPrompt(prompt) {
   Ask(prompt)
     .then(() => {
       waitingResponse.value = false;
+    }).catch((error) => {
+      waitingResponse.value = false;
+      _(error.message).then((message) => {
+        showToast("error", "Error", message);
+      }).catch(() => {
+        showToast("error", "Error", error.message);
+      });
     });
 }
 
@@ -95,13 +120,19 @@ onMounted(() => {
     currentModel.value = model;
   });
   EventsOn("show-help", () => {
-    showHelp.value = !showHelp.value;
+    showHelp.value = true;
   });
   OnFileDrop((x, y, paths) => {
     console.log("File dropped at", x, y, paths);
   })
   updateTranslation();
   setCurrentModel();
+  // hide the help popup when clicking outside of it
+  document.addEventListener('keyup', (event) => {
+    if (event.key === "Escape" && showHelp.value) {
+      showHelp.value = false;
+    }
+  });
 });
 
 
@@ -128,10 +159,14 @@ onMounted(() => {
 
   <Files :class="{ 'hidden': !currentModel.vision }" />
   <Prompt :sendPrompt="sendPrompt" :model="currentModel" />
-  <div class="popup" v-if="showHelp">
+  <div class="popup" v-if="showHelp" tabindex="-1">
     <article v-html="translations.helpText">
     </article>
     <button @click="showHelp = false">{{ translations.closeLabel }}</button>
+  </div>
+  <div :class="['toast', toastMessage.type]" v-if="!toastMessage.hidden">
+    <strong>{{ toastMessage.title }}</strong>
+    <p>{{ toastMessage.message }}</p>
   </div>
 </template>
 
@@ -144,7 +179,8 @@ onMounted(() => {
   position: fixed;
   display: flex;
   flex-direction: column;
-  background-color: var(--window-bg-color);
+  background-color: var(--view-bg-color);
+  color: var(--view-fg-color);
   padding: 10px;
   border-radius: .5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -259,5 +295,24 @@ small {
   40% {
     opacity: 0;
   }
+}
+
+.toast {
+  position: fixed;
+  bottom: 55px;
+  left: 80%;
+  transform: translateX(-50%);
+  background-color: var(--window-bg-color);
+  color: var(--view-fg-color);
+  padding: 10px;
+  border-radius: .5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  min-width: 200px;
+}
+
+.toast.error {
+  background-color: var(--error-bg-color);
+  color: var(--error-fg-color);
 }
 </style>
