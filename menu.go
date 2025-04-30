@@ -2,6 +2,7 @@ package main
 
 import (
 	"PolAIn/internal/api"
+	"fmt"
 
 	"github.com/wailsapp/wails/v2/pkg/menu"
 	"github.com/wailsapp/wails/v2/pkg/menu/keys"
@@ -10,32 +11,53 @@ import (
 
 var currentModel *ModelPresentation
 
+type LabelParts struct {
+	Icons string
+	Text  string
+}
+
 type ModelPresentation struct {
 	*api.ModelDefinition
 }
 
-func (mp *ModelPresentation) GetLabel() string {
-	icon := "🔞"
-	var label string
-	if mp.Uncensorded {
-		label = icon + mp.Name + "\n➟" + mp.Description
-	} else {
-		label = mp.Name + "\n➟" + mp.Description
-	}
+func (mp *ModelPresentation) getLabelParts() LabelParts {
+	textIcon := ""
+	adultIcon := "🔞"
+	eyeIcon := "👁️"
+
+	icons := textIcon
 	if mp.Vision {
-		label += "\n➟" + "👁️ Vision"
+		icons += eyeIcon
 	}
-	return label
+	if mp.Uncensorded {
+		icons += adultIcon
+	}
+
+	text := fmt.Sprintf("%s (%s, by: %s)", mp.Name, mp.Description, mp.Provider)
+
+	return LabelParts{
+		Icons: icons,
+		Text:  text,
+	}
+}
+
+func (mp *ModelPresentation) getLabel() string {
+	label := mp.getLabelParts()
+	s := fmt.Sprintf("%s %*s %s", label.Icons, 12-len(label.Icons), " ", label.Text)
+	return s
 }
 
 var modelList = []*ModelPresentation{}
 
 func init() {
 	models := api.GetModels()
+
 	for _, model := range models {
 		modelList = append(modelList, &ModelPresentation{&model})
+		if !model.Uncensorded && currentModel == nil {
+			currentModel = modelList[len(modelList)-1]
+		}
 	}
-	currentModel = modelList[0]
 }
 
 func (a *App) getMenu() *menu.Menu {
@@ -44,7 +66,7 @@ func (a *App) getMenu() *menu.Menu {
 	modelItems := make([]*menu.MenuItem, len(modelList))
 	for i, model := range modelList {
 		modelItems[i] = &menu.MenuItem{
-			Label: model.GetLabel(),
+			Label: model.getLabel(),
 			Type:  menu.RadioType,
 			Click: func(current *menu.CallbackData) {
 				// find the index of the menu
