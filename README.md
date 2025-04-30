@@ -12,6 +12,26 @@ The interface uses [Vue](https://vuejs.org).
 
 All of this make it possible to build a cross-platform (Linux, Windows and macOS) application from one source code.
 
+## Capabilities
+
+PolAIn is a simple interface to communicate with Pollinations.
+
+It uses image generation API
+
+![Image generation](./misc/image-generator.png)
+
+Some models supports vision, so you can drag and drop images, or use the "upload" button to process several images:
+
+![Vision](./misc/vision.png)
+
+PolAIn fixes mathematics representation to be displayed with [MathJax](https://mathjax.org).
+
+![Math](./misc/math.png)
+
+You can use it to lean development, or to be helped on development.
+
+![Development](./misc/dev.png)
+
 ## Behind the scene
 
 Pollinations is a fascinating project which is entirely free, without the need of registration, and it offers plenty of models. It also provides an image generation endpoint on Flux1.dev and Turbo models.
