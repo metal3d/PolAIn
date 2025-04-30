@@ -194,6 +194,7 @@ onMounted(() => {
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
   visibility: hidden;
+  --default-contextmenu: show;
 }
 
 
