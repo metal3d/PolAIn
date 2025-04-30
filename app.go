@@ -3,6 +3,7 @@ package main
 import (
 	"PolAIn/internal/api"
 	"context"
+	"fmt"
 	"log"
 	"slices"
 	"strings"
@@ -152,6 +153,9 @@ func (a *App) Ask(prompt string) error {
 		Content: []api.MessageContent{{Type: "text", Text: &buffer}},
 	})
 	log.Println("Final buffer", buffer)
+	if len(strings.TrimSpace(buffer)) == 0 {
+		return fmt.Errorf("model.empty.response")
+	}
 	return nil
 }
 

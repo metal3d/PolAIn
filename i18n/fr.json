@@ -1,16 +1,17 @@
 {
   "close": "Fermer",
+  "conversation.new.confirm": "Cela effacera votre conversation en cours, êtes vous sûr ?",
   "prompt.placeholder": "Tapez votre question ici",
   "prompt.send": "Envoyer",
   "prompt.upload.image": "Ajouter une image",
   "menu.conversation": "Conversation",
   "menu.conversation.new": "Nouvelle conversation",
   "menu.models": "Modèles",
-  "conversation.new.confirm": "Cela effacera votre conversation en cours, êtes vous sûr ?",
+  "menu.help.title": "Aide et informations",
   "model.current": "Modèle en cours",
+  "model.empty.response": "Le modèle semble ne pas répondre. Merci d'en sélectionner un autre.",
   "model.alert.uncensored.title": "🔞 Modèle non censuré",
   "model.alert.uncensored.message": "Attention, ce modèle est non censuré !\nCela signifie que ses réponses peuvent être inappropriées, violentes, insultantes, ou sexuellement explicites.\nVous devez prendre toutes les précautions en ce qui concerne ses réponses, et ne les utiliser qu'à \ndes fins de recherche, d'utilisation personnelles et dans la limite des lois applicables dans votre pays.\n",
-  "menu.help.title": "Aide et informations",
   "thinking.label": "Raisonnement du modèle",
   "about.help": "# PolAIn\n\nPolAin est une application conversationnelle avec l'IA (Intelligence Artificielle). Elle utilise le service \n[https://pollinations.ai](https://pollinations.ai) pour répondre avec différents \"modèles\".\n\n> Pollinations est une plateforme entièrement libre, proposant des accès à des modèles IA texte et\n> images, en **garantissant l'anonymat et le respect de la vie privée**.\n\nUn modèle est une \"version\" entrainée d'une IA. Elles ont toutes une manière de traiter l'information et de \nla restituer. Selon votre demande, un modèle pourra ne pas répondre efficacement.\n\nCette application permet aussi de générer des images.\n\n## Comment utiliser l'application ?\n\nTapez simplement une question et pressez la touche \"Entrée\", le modèle sélectionné dans le menu \"Modèles\" \nva alors être utilisé pour répondre à cette question. Si vous voulez changer de modèle, utilisez le menu \n\"Modèles\" et sélectionnez celui qui vous convient.\n\n> Chaque modèle à sa propre manière de répondre à vos demandes. Attention, certains sont marqués d'un \nsymbole 🔞 ce qui signifie qu'il ne sont pas censurés.\n\n## La génération d'image\n\nPolAIn détecte si vous demandez une image. Dans ce cas précis, il va aider l'IA à créer une adresse \nd'image sur le service [https://images.pollinsations.ai](https://images.pollinsations.ai) - l'image sera \ngénérée et affichée dans la conversation.\n\n## Auteur et licence\n\nCette application est un logiciel libre, open source, développé par Patrice Ferlet.\n\nLes sources de l'application et la page pour proposer votre aide, ou pour créer un rapport \nde bug, se trouvent à l'addresse:\n\n[https://github.com/metal3d/polain](https://github.com/metal3d/polain)\n"
 }

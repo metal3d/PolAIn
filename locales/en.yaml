@@ -1,12 +1,17 @@
 close: Close
+conversation.new.confirm: This will delete your current conversation, are you sure?
+
 prompt.placeholder: Type your question here
 prompt.send: Send
 prompt.upload.image: Add an image
+
 menu.conversation: Conversation
 menu.conversation.new: New conversation
 menu.models: Models
-conversation.new.confirm: This will delete your current conversation, are you sure?
+menu.help.title: Help and information
+
 model.current: Using model 
+model.empty.response: The model seems to not repond. Please, select another one.
 model.alert.uncensored.title: 🔞 Uncensored model
 model.alert.uncensored.message: |
   Warning: this model is uncensored!
@@ -15,7 +20,6 @@ model.alert.uncensored.message: |
   You must take every precaution with regard to its answers, and use them only for research purposes, 
   personal use and within the limits of the laws applicable in your country.
 
-menu.help.title: Help and information
 thinking.label: Model reasoning
 
 about.help: |

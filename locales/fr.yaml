@@ -1,12 +1,17 @@
 close: Fermer
+conversation.new.confirm: Cela effacera votre conversation en cours, êtes vous sûr ?
+
 prompt.placeholder: Tapez votre question ici
 prompt.send: Envoyer
 prompt.upload.image: Ajouter une image
+
 menu.conversation: Conversation
 menu.conversation.new: Nouvelle conversation
 menu.models: Modèles
-conversation.new.confirm: Cela effacera votre conversation en cours, êtes vous sûr ?
+menu.help.title: Aide et informations
+
 model.current: Modèle en cours
+model.empty.response: Le modèle semble ne pas répondre. Merci d'en sélectionner un autre.
 model.alert.uncensored.title: 🔞 Modèle non censuré
 model.alert.uncensored.message: |
   Attention, ce modèle est non censuré !
@@ -14,9 +19,7 @@ model.alert.uncensored.message: |
   Vous devez prendre toutes les précautions en ce qui concerne ses réponses, et ne les utiliser qu'à 
   des fins de recherche, d'utilisation personnelles et dans la limite des lois applicables dans votre pays.
 
-menu.help.title: Aide et informations
 thinking.label: Raisonnement du modèle
-
 
 about.help: |
   # PolAIn
