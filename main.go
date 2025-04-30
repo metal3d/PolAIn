@@ -12,6 +12,9 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed frontend/src/assets/images/appicon.png
+var icon []byte
+
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
@@ -29,6 +32,7 @@ func main() {
 		// EnableDefaultContextMenu: true,
 		Linux: &linux.Options{
 			WebviewGpuPolicy: linux.WebviewGpuPolicyOnDemand,
+			Icon:             icon,
 		},
 		DragAndDrop: &options.DragAndDrop{
 			EnableFileDrop: true,
