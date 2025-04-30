@@ -59,13 +59,12 @@ func (a *App) T(m, lang string, md bool) string {
 	if tr, ok := translations[lang]; ok {
 		if t, ok := tr[m]; ok {
 			if md {
-				log.Println("Markdown:", t)
 				t = string(MDtoHTML(t))
 			}
 			return t
 		}
 	}
-	if lang != "en" {
+	if lang != "en.json" {
 		return a.T(m, "en", md)
 	}
 	return m
