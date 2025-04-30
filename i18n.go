@@ -25,6 +25,10 @@ func init() {
 		if f.IsDir() {
 			continue
 		}
+		// only json files
+		if !strings.HasSuffix(f.Name(), ".json") {
+			continue
+		}
 
 		source, err := locales.Open("i18n/" + f.Name())
 		if err != nil {
@@ -34,7 +38,8 @@ func init() {
 		decoder := json.NewDecoder(source)
 		translation := map[string]string{}
 		if err := decoder.Decode(&translation); err != nil {
-			log.Println("Error decoding JSON:", err)
+			log.Println("i18n, init: Error decoding JSON:", source, err)
+			continue
 		}
 		translations[f.Name()] = translation
 	}
