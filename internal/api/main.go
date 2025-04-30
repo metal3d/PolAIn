@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -230,6 +231,12 @@ func GetModels() []ModelDefinition {
 		log.Println("Error decoding models:", err)
 		return nil
 	}
+
+	// sort the models by name
+	sort.Slice(response, func(i, j int) bool {
+		return response[i].Name < response[j].Name
+	})
+
 	return response
 }
 
