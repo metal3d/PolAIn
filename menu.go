@@ -10,6 +10,13 @@ import (
 )
 
 var currentModel *ModelPresentation
+var (
+	textIcon      = ""
+	adultIcon     = "🔞"
+	eyeIcon       = "👁️"
+	reasoningIcon = "🧠"
+	emptyIcon     = "＿"
+)
 
 type LabelParts struct {
 	Icons string
@@ -21,19 +28,24 @@ type ModelPresentation struct {
 }
 
 func (mp *ModelPresentation) getLabelParts() LabelParts {
-	textIcon := ""
-	adultIcon := "🔞"
-	eyeIcon := "👁️"
-
 	icons := textIcon
 	if mp.Vision {
 		icons += eyeIcon
+	} else {
+		icons += emptyIcon
+	}
+	if mp.Reasoning {
+		icons += reasoningIcon
+	} else {
+		icons += emptyIcon
 	}
 	if mp.Uncensorded {
 		icons += adultIcon
+	} else {
+		icons += emptyIcon
 	}
 
-	text := fmt.Sprintf("%s (%s, by: %s)", mp.Name, mp.Description, mp.Provider)
+	text := fmt.Sprintf("%s (%s, provider: %s)", mp.Name, mp.Description, mp.Provider)
 
 	return LabelParts{
 		Icons: icons,
@@ -43,7 +55,7 @@ func (mp *ModelPresentation) getLabelParts() LabelParts {
 
 func (mp *ModelPresentation) getLabel() string {
 	label := mp.getLabelParts()
-	s := fmt.Sprintf("%s %*s %s", label.Icons, 12-len(label.Icons), " ", label.Text)
+	s := fmt.Sprintf("%s %s", label.Icons, label.Text)
 	return s
 }
 
