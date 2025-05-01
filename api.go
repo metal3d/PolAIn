@@ -25,51 +25,6 @@ func (a *App) GetSelectedModel() *ModelPresentation {
 	return currentModel
 }
 
-func (a *App) AddFiles(files []string) {
-	for _, f := range files {
-		content, err := encodeFile(f)
-		if err != nil {
-			log.Println("Error encoding image:", err)
-			continue
-		}
-		filesToSend = append(filesToSend, content)
-		runtime.EventsEmit(a.ctx, "register-files", content)
-	}
-}
-
-func (a *App) SelectFiles(filetype string) {
-	filters := []runtime.FileFilter{}
-	if filetype == "image" {
-		filters = append(filters, runtime.FileFilter{
-			DisplayName: "Images",
-			Pattern:     "*.jpeg;*.jpg;*.png;*.gif;*.webp",
-		})
-	}
-	filename, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
-		Filters: filters,
-	})
-	if filename == "" || err != nil {
-		return
-	}
-	a.AddFiles([]string{filename})
-}
-
-func (a *App) RemoveFile(pos int) bool {
-	response, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
-		Type:    runtime.QuestionDialog,
-		Title:   "Delete Image",
-		Message: "Are you sure you want to delete this image?",
-	})
-	if err != nil {
-		log.Println("Error showing dialog:", err)
-		return false
-	}
-	if response == "yes" {
-		filesToSend = slices.Delete(filesToSend, pos, pos+1)
-	}
-	return true
-}
-
 // Ask sends a prompt to the OpenAI API and returns the response.
 func (a *App) Ask(prompt string) error {
 	runtime.EventsEmit(a.ctx, "ask-start", prompt)
@@ -151,4 +106,39 @@ func (a *App) NewConversation() error {
 	filesToSend = []string{}
 	runtime.EventsEmit(a.ctx, "new-conversation", a.history)
 	return nil
+}
+
+// SelectFiles is called when the user press image or audio button.
+func (a *App) SelectFiles(filetype string) {
+	filters := []runtime.FileFilter{}
+	if filetype == "image" {
+		filters = append(filters, runtime.FileFilter{
+			DisplayName: "Images",
+			Pattern:     "*.jpeg;*.jpg;*.png;*.gif;*.webp",
+		})
+	}
+	filename, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Filters: filters,
+	})
+	if filename == "" || err != nil {
+		return
+	}
+	a.addFiles([]string{filename})
+}
+
+// RemoveFile is called when the user press delete button on the image or audio file.
+func (a *App) RemoveFile(pos int) bool {
+	response, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:    runtime.QuestionDialog,
+		Title:   "Delete Image",
+		Message: "Are you sure you want to delete this image?",
+	})
+	if err != nil {
+		log.Println("Error showing dialog:", err)
+		return false
+	}
+	if response == "yes" {
+		filesToSend = slices.Delete(filesToSend, pos, pos+1)
+	}
+	return true
 }
