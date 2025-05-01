@@ -22,11 +22,8 @@ func init() {
 		panic(err)
 	}
 	for _, f := range dirs {
-		if f.IsDir() {
-			continue
-		}
-		// only json files
-		if !strings.HasSuffix(f.Name(), ".json") {
+		// only process json files
+		if f.IsDir() || !strings.HasSuffix(f.Name(), ".json") {
 			continue
 		}
 

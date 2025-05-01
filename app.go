@@ -152,9 +152,9 @@ func (a *App) Ask(prompt string) error {
 		Role:    api.Assistant,
 		Content: []api.MessageContent{{Type: "text", Text: &buffer}},
 	})
-	log.Println("Final buffer", buffer)
+
 	if len(strings.TrimSpace(buffer)) == 0 {
-		return fmt.Errorf("model.empty.response")
+		return fmt.Errorf("%s", a.Translate("model.empty.response"))
 	}
 	return nil
 }

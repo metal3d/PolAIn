@@ -86,13 +86,9 @@ function sendPrompt(prompt) {
   Ask(prompt)
     .then(() => {
       waitingResponse.value = false;
-    }).catch((error) => {
-      waitingResponse.value = false;
-      _(error.message).then((message) => {
-        showToast("error", "Error", message);
-      }).catch(() => {
-        showToast("error", "Error", error.message);
-      });
+    })
+    .catch((error) => {
+      showToast("error", "Error", error);
     });
 }
 
@@ -102,7 +98,7 @@ function setCurrentModel() {
       currentModel.value = model;
     })
     .catch((error) => {
-      console.error("Error fetching current model:", error);
+      showToast("error", "", "Error fetching current model: " + error);
     });
 }
 
@@ -189,6 +185,27 @@ onMounted(() => {
   margin-top: 1rem;
   margin-left: 10vw;
   z-index: 1001;
+}
+
+.popup h1 {
+  position: relative;
+  font-size: 2rem;
+  margin: 0;
+  padding: 0;
+  height: calc(255px + 2rem);
+}
+
+.popup h1:after {
+  position: absolute;
+  top: 2.2rem;
+  left: 0;
+  background-image: url(./assets/images/appicon.png);
+  background-size: contain;
+  width: 100%;
+  height: 255px;
+  background-repeat: no-repeat;
+  background-position: calc(50%);
+  content: " ";
 }
 
 .popup article {
