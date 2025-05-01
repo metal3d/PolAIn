@@ -4,6 +4,7 @@ import _ from "../i18n.js"
 import 'mathjax/es5/tex-mml-svg.js';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
+import { BrowserOpenURL } from '../../wailsjs/runtime/runtime.js';
 
 
 const props = defineProps(['message', "onContent", "model"]);
@@ -25,7 +26,6 @@ async function updateTranslation() {
   translations.value.thinkingLabel = await _("thinking.label")
 }
 
-
 async function enhanceHighlight() {
   return new Promise((resolve) => {
     const pre = container.value?.querySelectorAll('pre') || [];
@@ -39,17 +39,34 @@ async function enhanceHighlight() {
   })
 }
 
+// reformat to use highlightjs, image loading, links, and so on
 async function formatMessage() {
   await nextTick(); // wait for DOM updates
 
   MathJax.typesetPromise()
+    .then(fixLinks)
     .then(enhanceHighlight)
     .then(enhanceImages)
     .then(props.onContent);
 
 }
 
+// make linls open in a new browser
+function fixLinks() {
+  const links = container.value?.querySelectorAll('a') || [];
+  links.forEach(link => {
+    const href = link.getAttribute('href');
+    // make all links open in a new browser
+    if (href.length > 0) {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        BrowserOpenURL(href)
+      });
+    }
+  });
+}
 
+// add a spinner while loading images
 const enhanceImages = async () => {
   const images = container.value?.querySelectorAll('img') || [];
   images.forEach(img => {
