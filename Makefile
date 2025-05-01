@@ -10,7 +10,7 @@ dev:
 	wails dev $(TAGS)
 
 build:
-	wails build $(TAGS)
+	wails build -clean -u -upx --trimpath $(TAGS)
 
 run: build
 	build/bin/PolAIn
